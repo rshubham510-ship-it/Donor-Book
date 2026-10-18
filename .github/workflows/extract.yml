@@ -1,29 +1,33 @@
 name: Extract APK Source
-
 on:
+  workflow_dispatch:
   push:
+    paths: ['trigger.txt']
 
 jobs:
   extract:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install apktool
-        run: |
-          wget -q https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
-          chmod +x apktool
-          sudo mv apktool /usr/local/bin/
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-      - name: Decompile APK
+      - name: Download apktool and jadx
         run: |
-          apktool d app-release.apk -o extracted_source
+          curl -L -o apktool.jar https://github.com/iBotPeaches/Apktool/releases/download/v2.10.0/apktool_2.10.0.jar
+          curl -L -o jadx.zip https://github.com/skylot/jadx/releases/download/v1.5.0/jadx-1.5.0.zip
+          unzip -q jadx.zip -d jadx
 
-      - name: Commit extracted source
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add extracted_source/
-          git commit -m "Extracted source from APK" || echo "No changes to commit"
-          git push
+      - name: Decode resources and smali (apktool)
+        run: java -jar apktool.jar d app-release.apk -o out/apktool -f
+
+      - name: Decompile to Java (jadx)
+        run: jadx/bin/jadx -d out/jadx app-release.apk || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk-source
+          path: out
