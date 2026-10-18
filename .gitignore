@@ -1,0 +1,23 @@
+# Built application files
+*.apk
+*.aar
+*.ap_
+
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log Files
+*.log
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# macOS
+.DS_Store
