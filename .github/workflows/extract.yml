@@ -2,8 +2,7 @@ name: Extract APK Source
 
 on:
   push:
-    paths:
-      - 'app-release.apk'
+
 
 jobs:
   extract:
