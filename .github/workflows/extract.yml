@@ -3,7 +3,6 @@ name: Extract APK Source
 on:
   push:
 
-
 jobs:
   extract:
     runs-on: ubuntu-latest
@@ -20,12 +19,13 @@ jobs:
       - name: Install apktool
         run: |
           wget -q https://github.com/iBotPeaches/Apktool/releases/download/v2.9.0/apktool_2.9.0.jar
-          sudo mv apktool_2.9.0.jar /usr/local/bin/apktool
-          chmod +x /usr/local/bin/apktool
+          sudo apt-get update && sudo apt-get install -y default-jdk
+          sudo java -jar apktool_2.9.0.jar -o /dev/null 2>&1 || true
+          mv apktool_2.9.0.jar apktool
 
       - name: Decompile APK
         run: |
-          apktool d app-release.apk -o extracted_source
+          java -jar apktool d app-release.apk -o extracted_source
 
       - name: Commit extracted source
         run: |
