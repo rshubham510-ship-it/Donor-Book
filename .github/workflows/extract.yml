@@ -10,22 +10,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
       - name: Install apktool
         run: |
-          wget -q https://github.com/iBotPeaches/Apktool/releases/download/v2.9.0/apktool_2.9.0.jar
-          sudo apt-get update && sudo apt-get install -y default-jdk
-          sudo java -jar apktool_2.9.0.jar -o /dev/null 2>&1 || true
-          mv apktool_2.9.0.jar apktool
+          wget -q https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool
+          chmod +x apktool
+          sudo mv apktool /usr/local/bin/
 
       - name: Decompile APK
         run: |
-          java -jar apktool d app-release.apk -o extracted_source
+          apktool d app-release.apk -o extracted_source
 
       - name: Commit extracted source
         run: |
